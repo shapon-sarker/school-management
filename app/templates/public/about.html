@@ -1,0 +1,86 @@
+{% extends "public/layout.html" %}
+
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="text-center mb-5">About Our School</h1>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Our Mission</h2>
+                    <p class="lead">
+                        To provide quality education that prepares students for the challenges of tomorrow while fostering 
+                        creativity, critical thinking, and character development.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Our Vision</h2>
+                    <p>
+                        To be a leading educational institution that:
+                    </p>
+                    <ul>
+                        <li>Empowers students to reach their full potential</li>
+                        <li>Promotes academic excellence and innovation</li>
+                        <li>Builds strong character and leadership skills</li>
+                        <li>Creates a positive and inclusive learning environment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Our Values</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h3 class="h5">Excellence</h3>
+                                <p>Striving for the highest standards in education and personal development.</p>
+                            </div>
+                            <div class="mb-3">
+                                <h3 class="h5">Integrity</h3>
+                                <p>Maintaining honesty, ethics, and transparency in all our actions.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h3 class="h5">Innovation</h3>
+                                <p>Embracing new ideas and methods to enhance learning experiences.</p>
+                            </div>
+                            <div class="mb-3">
+                                <h3 class="h5">Community</h3>
+                                <p>Building strong relationships between students, teachers, and parents.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Contact Us</h2>
+                    <p>Have questions? We'd love to hear from you!</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Address:</strong><br>123 School Street<br>City, State 12345</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Contact:</strong><br>
+                            Phone: (123) 456-7890<br>
+                            Email: info@school.com</p>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('public.contact') }}" class="btn btn-primary">Get in Touch</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

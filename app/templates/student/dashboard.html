@@ -1,0 +1,218 @@
+{% extends "student/base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <div>
+            <select class="form-select" id="academicYear">
+                {% for year in academic_years %}
+                <option value="{{ year.id }}" {% if year.is_active %}selected{% endif %}>{{ year.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Profile Overview and Quick Stats -->
+    <div class="row">
+        <!-- Profile Overview -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-body text-center">
+                    <img src="{{ profile.photo_url or url_for('static', filename='img/default-avatar.png') }}" 
+                         class="rounded-circle img-thumbnail mb-3" style="width: 150px; height: 150px;">
+                    <h5 class="font-weight-bold">{{ current_user.name }}</h5>
+                    <p class="text-muted">
+                        Class {{ class.name }} - Section {{ section.name }}<br>
+                        Roll No: {{ profile.roll_number }}
+                    </p>
+                    <hr>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h6 class="mb-0">{{ stats.attendance }}%</h6>
+                            <small class="text-muted">Attendance</small>
+                        </div>
+                        <div class="col-4">
+                            <h6 class="mb-0">{{ stats.rank }}</h6>
+                            <small class="text-muted">Rank</small>
+                        </div>
+                        <div class="col-4">
+                            <h6 class="mb-0">{{ stats.grade }}</h6>
+                            <small class="text-muted">Grade</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="row">
+                <!-- Assignments -->
+                <div class="col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pending Assignments</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.pending_assignments }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-journal-text fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fee Status -->
+                <div class="col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Fee Status</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.fee_status }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-cash-stack fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Today's Schedule</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th>Time</th>
+                                    <th>Subject</th>
+                                    <th>Teacher</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for period in today_schedule %}
+                                <tr>
+                                    <td>{{ period.period_number }}</td>
+                                    <td>{{ period.start_time.strftime('%H:%M') }} - {{ period.end_time.strftime('%H:%M') }}</td>
+                                    <td>{{ period.subject_name }}</td>
+                                    <td>{{ period.teacher_name }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No classes scheduled for today</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities and Notices -->
+    <div class="row">
+        <!-- Recent Activities -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+                </div>
+                <div class="card-body">
+                    <div class="activity-feed">
+                        {% for activity in recent_activities %}
+                        <div class="activity-item">
+                            <div class="activity-content">
+                                <div class="activity-header">
+                                    <i class="bi {{ activity.icon }}"></i>
+                                    <span class="activity-time">{{ activity.time }}</span>
+                                </div>
+                                <p class="mb-0">{{ activity.description }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Notices -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Notices</h6>
+                </div>
+                <div class="card-body">
+                    {% for notice in recent_notices %}
+                    <div class="notice-item mb-3">
+                        <h6 class="font-weight-bold">{{ notice.title }}</h6>
+                        <p class="small text-muted mb-1">{{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p class="mb-0">{{ notice.content[:100] }}...</p>
+                        <a href="{{ url_for('student.view_notice', notice_id=notice.id) }}" class="btn btn-sm btn-link">Read More</a>
+                    </div>
+                    {% if not loop.last %}
+                    <hr>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Links</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="{{ url_for('student.view_assignments') }}" class="btn btn-primary btn-block">
+                                <i class="bi bi-journal-text"></i> Assignments
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="{{ url_for('student.view_results') }}" class="btn btn-success btn-block">
+                                <i class="bi bi-file-text"></i> Results
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="{{ url_for('student.view_attendance') }}" class="btn btn-info btn-block">
+                                <i class="bi bi-calendar-check"></i> Attendance
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="{{ url_for('student.fee_details') }}" class="btn btn-warning btn-block">
+                                <i class="bi bi-cash"></i> Fee Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('academicYear').addEventListener('change', function() {
+    window.location.href = "{{ url_for('student.dashboard') }}?year=" + this.value;
+});
+</script>
+{% endblock %} 

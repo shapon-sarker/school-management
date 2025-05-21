@@ -1,0 +1,138 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Class Management</h1>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-table me-1"></i>
+                Classes List
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClassModal">
+                Add New Class
+            </button>
+        </div>
+        <div class="card-body">
+            <table id="classesTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Sections</th>
+                        <th>Students</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class in classes %}
+                    <tr>
+                        <td>{{ class.id }}</td>
+                        <td>{{ class.name }}</td>
+                        <td>{{ class.description }}</td>
+                        <td>{{ class.sections|length }}</td>
+                        <td>{{ class.students|length }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editClass({{ class.id }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteClass({{ class.id }})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Class Modal -->
+<div class="modal fade" id="addClassModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Class</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addClassForm" method="POST" action="{{ url_for('admin.add_class') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="addClassForm" class="btn btn-primary">Add Class</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Class Modal -->
+<div class="modal fade" id="editClassModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Class</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editClassForm" method="POST">
+                    <input type="hidden" id="edit_class_id" name="class_id">
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_description" class="form-label">Description</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="editClassForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#classesTable').DataTable();
+    });
+
+    function editClass(classId) {
+        fetch(`/admin/class/${classId}`)
+            .then(response => response.json())
+            .then(data => {
+                $('#edit_class_id').val(data.id);
+                $('#edit_name').val(data.name);
+                $('#edit_description').val(data.description);
+                $('#editClassForm').attr('action', `/admin/class/${classId}/edit`);
+                $('#editClassModal').modal('show');
+            });
+    }
+
+    function deleteClass(classId) {
+        if (confirm('Are you sure you want to delete this class? This will also delete all associated sections and student assignments.')) {
+            fetch(`/admin/class/${classId}/delete`, {
+                method: 'POST',
+            }).then(() => {
+                location.reload();
+            });
+        }
+    }
+</script>
+{% endblock %}
+{% endblock %} 

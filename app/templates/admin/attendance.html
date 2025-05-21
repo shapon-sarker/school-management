@@ -1,0 +1,226 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Attendance Management</h1>
+    
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>
+            Filter Attendance
+        </div>
+        <div class="card-body">
+            <form id="filterForm" class="row g-3">
+                <div class="col-md-3">
+                    <label for="class_id" class="form-label">Class</label>
+                    <select class="form-select" id="class_id" name="class_id" required>
+                        <option value="">Select Class</option>
+                        {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="section_id" class="form-label">Section</label>
+                    <select class="form-select" id="section_id" name="section_id" required>
+                        <option value="">Select Section</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="date" name="date" required>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Load Students</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Attendance Form -->
+    <div class="card mb-4" id="attendanceCard" style="display: none;">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-clipboard-check me-1"></i>
+                Mark Attendance
+            </div>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" onclick="markAllPresent()">
+                    Mark All Present
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="markAllAbsent()">
+                    Mark All Absent
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="attendanceForm" method="POST" action="{{ url_for('admin.save_attendance') }}">
+                <input type="hidden" name="date" id="attendance_date">
+                <input type="hidden" name="class_id" id="attendance_class_id">
+                <input type="hidden" name="section_id" id="attendance_section_id">
+                <table id="studentsTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                    </tbody>
+                </table>
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary">Save Attendance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Attendance Report -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-chart-bar me-1"></i>
+            Attendance Report
+        </div>
+        <div class="card-body">
+            <form id="reportForm" class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label for="report_class_id" class="form-label">Class</label>
+                    <select class="form-select" id="report_class_id" name="class_id" required>
+                        <option value="">Select Class</option>
+                        {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="report_section_id" class="form-label">Section</label>
+                    <select class="form-select" id="report_section_id" name="section_id" required>
+                        <option value="">Select Section</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="report_month" class="form-label">Month</label>
+                    <input type="month" class="form-control" id="report_month" name="month" required>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </form>
+            <div id="reportContent" style="display: none;">
+                <table id="reportTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Present Days</th>
+                            <th>Absent Days</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Initialize date field with today's date
+        $('#date').val(new Date().toISOString().split('T')[0]);
+
+        // Handle section dropdown updates
+        $('#class_id, #report_class_id').change(function() {
+            const classId = $(this).val();
+            const targetId = $(this).attr('id').includes('report') ? 'report_section_id' : 'section_id';
+            
+            if (classId) {
+                fetch(`/admin/class/${classId}/sections`)
+                    .then(response => response.json())
+                    .then(sections => {
+                        const dropdown = $(`#${targetId}`);
+                        dropdown.empty().append('<option value="">Select Section</option>');
+                        sections.forEach(section => {
+                            dropdown.append(`<option value="${section.id}">${section.name}</option>`);
+                        });
+                    });
+            }
+        });
+
+        // Handle filter form submission
+        $('#filterForm').submit(function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch(`/admin/attendance/students?${new URLSearchParams(formData)}`)
+                .then(response => response.json())
+                .then(data => {
+                    $('#studentsTableBody').empty();
+                    data.forEach(student => {
+                        $('#studentsTableBody').append(`
+                            <tr>
+                                <td>${student.roll_no}</td>
+                                <td>${student.name}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="status_${student.id}" id="present_${student.id}" value="present" checked>
+                                        <label class="btn btn-outline-success" for="present_${student.id}">Present</label>
+                                        <input type="radio" class="btn-check" name="status_${student.id}" id="absent_${student.id}" value="absent">
+                                        <label class="btn btn-outline-danger" for="absent_${student.id}">Absent</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" name="remarks_${student.id}" placeholder="Optional remarks">
+                                </td>
+                            </tr>
+                        `);
+                    });
+                    
+                    // Update hidden fields and show attendance card
+                    $('#attendance_date').val(formData.get('date'));
+                    $('#attendance_class_id').val(formData.get('class_id'));
+                    $('#attendance_section_id').val(formData.get('section_id'));
+                    $('#attendanceCard').show();
+                });
+        });
+
+        // Handle report form submission
+        $('#reportForm').submit(function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch(`/admin/attendance/report?${new URLSearchParams(formData)}`)
+                .then(response => response.json())
+                .then(data => {
+                    $('#reportTableBody').empty();
+                    data.forEach(record => {
+                        $('#reportTableBody').append(`
+                            <tr>
+                                <td>${record.roll_no}</td>
+                                <td>${record.name}</td>
+                                <td>${record.present_days}</td>
+                                <td>${record.absent_days}</td>
+                                <td>${record.attendance_percentage}%</td>
+                            </tr>
+                        `);
+                    });
+                    $('#reportContent').show();
+                });
+        });
+    });
+
+    function markAllPresent() {
+        $('input[value="present"]').prop('checked', true);
+    }
+
+    function markAllAbsent() {
+        $('input[value="absent"]').prop('checked', true);
+    }
+</script>
+{% endblock %}
+{% endblock %} 

@@ -1,0 +1,31 @@
+Flask==2.3.3
+Flask-SQLAlchemy==2.5.1
+Flask-Login==0.6.3
+Flask-WTF==1.2.1
+Flask-Migrate==4.0.5
+python-dotenv==1.0.1
+email-validator==2.1.0.post1
+Werkzeug==2.3.7
+SQLAlchemy==1.4.50
+WTForms==3.1.0
+Bootstrap-Flask==2.3.3
+Pillow==10.2.0  # For image handling
+Flask-Assets==2.1.0  # For asset management
+webassets==2.0  # Required by Flask-Assets
+# PDF and Excel Export
+WeasyPrint==60.1
+openpyxl==3.1.2
+# Email and SMS
+Flask-Mail==0.9.1
+twilio==8.10.0
+# QR Code for ID Cards
+qrcode==7.4.2
+# Production Dependencies
+gunicorn==21.2.0
+psycopg2-binary==2.9.9  # PostgreSQL adapter
+mysqlclient==2.2.1  # MySQL adapter
+python-dotenv==1.0.1
+Flask-Compress==1.14
+Flask-Caching==2.1.0
+Flask-Limiter==3.5.0
+sentry-sdk[flask]==1.39.1  # Error tracking 

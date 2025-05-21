@@ -1,0 +1,182 @@
+{% extends "public/layout.html" %}
+
+{% block title %}Result Search{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">Result Search</h1>
+            <p class="lead">
+                Search and view your academic results using your student ID and exam details.
+            </p>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row mb-5">
+        <div class="col-lg-6 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 mb-4">Search Your Results</h2>
+                    <form action="{{ url_for('public.result_search') }}" method="GET">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Student ID" required>
+                            <label for="student_id">Student ID</label>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="exam_type" name="exam_type" required>
+                                <option value="" selected disabled>Select exam type</option>
+                                <option value="midterm">Mid-Term Examination</option>
+                                <option value="final">Final Examination</option>
+                                <option value="unit">Unit Test</option>
+                            </select>
+                            <label for="exam_type">Exam Type</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="academic_year" name="academic_year" required>
+                                <option value="" selected disabled>Select academic year</option>
+                                <option value="2023-2024">2023-2024</option>
+                                <option value="2022-2023">2022-2023</option>
+                                <option value="2021-2022">2021-2022</option>
+                            </select>
+                            <label for="academic_year">Academic Year</label>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <select class="form-select" id="term" name="term" required>
+                                <option value="" selected disabled>Select term</option>
+                                <option value="1">First Term</option>
+                                <option value="2">Second Term</option>
+                                <option value="3">Third Term</option>
+                            </select>
+                            <label for="term">Term</label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Search Results</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section (shown only when results are available) -->
+    {% if results %}
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Student Information -->
+                    <div class="mb-4">
+                        <h2 class="h4 mb-4">Result Details</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Student Name:</strong> {{ results.student_name }}</p>
+                                <p><strong>Student ID:</strong> {{ results.student_id }}</p>
+                                <p><strong>Class:</strong> {{ results.class }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Exam Type:</strong> {{ results.exam_type }}</p>
+                                <p><strong>Academic Year:</strong> {{ results.academic_year }}</p>
+                                <p><strong>Term:</strong> {{ results.term }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Marks Obtained</th>
+                                    <th>Total Marks</th>
+                                    <th>Grade</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subject in results.subjects %}
+                                <tr>
+                                    <td>{{ subject.name }}</td>
+                                    <td>{{ subject.marks_obtained }}</td>
+                                    <td>{{ subject.total_marks }}</td>
+                                    <td>{{ subject.grade }}</td>
+                                    <td>{{ subject.remarks }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Overall Performance -->
+                    <div class="mt-4">
+                        <h3 class="h5 mb-3">Overall Performance</h3>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p><strong>Total Marks:</strong> {{ results.total_marks }}/{{ results.max_marks }}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Percentage:</strong> {{ results.percentage }}%</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Overall Grade:</strong> {{ results.overall_grade }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Download Button -->
+                    <div class="mt-4">
+                        <a href="{{ url_for('public.download_result', result_id=results.id) }}" class="btn btn-primary">
+                            <i class="bi bi-download me-2"></i>Download Result
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- No Results Message -->
+    {% if no_results %}
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <div class="alert alert-info text-center" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                No results found for the provided criteria. Please check your details and try again.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Help Section -->
+    <div class="row mt-5">
+        <div class="col-lg-6 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="h5 mb-3">Need Help?</h3>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-question-circle me-2"></i>
+                            Can't find your results? <a href="{{ url_for('public.contact') }}">Contact support</a>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-exclamation-circle me-2"></i>
+                            Make sure to enter your correct Student ID
+                        </li>
+                        <li>
+                            <i class="bi bi-clock me-2"></i>
+                            Results are typically available within 2 weeks after examinations
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

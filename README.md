@@ -50,7 +50,8 @@ A comprehensive school management system built with Flask, featuring separate po
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/school-management.git
+git clone git remote add origin https://github.com/shapon-sarker/school-management.git
+
 cd school-management
 ```
 

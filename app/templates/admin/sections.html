@@ -1,0 +1,146 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Section Management</h1>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-table me-1"></i>
+                Sections List
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSectionModal">
+                Add New Section
+            </button>
+        </div>
+        <div class="card-body">
+            <table id="sectionsTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Students</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for section in sections %}
+                    <tr>
+                        <td>{{ section.id }}</td>
+                        <td>{{ section.name }}</td>
+                        <td>{{ section.class.name }}</td>
+                        <td>{{ section.students|length }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editSection({{ section.id }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteSection({{ section.id }})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Section Modal -->
+<div class="modal fade" id="addSectionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Section</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSectionForm" method="POST" action="{{ url_for('admin.add_section') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="class_id" class="form-label">Class</label>
+                        <select class="form-select" id="class_id" name="class_id" required>
+                            <option value="">Select Class</option>
+                            {% for class in classes %}
+                            <option value="{{ class.id }}">{{ class.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="addSectionForm" class="btn btn-primary">Add Section</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Modal -->
+<div class="modal fade" id="editSectionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Section</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editSectionForm" method="POST">
+                    <input type="hidden" id="edit_section_id" name="section_id">
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_class_id" class="form-label">Class</label>
+                        <select class="form-select" id="edit_class_id" name="class_id" required>
+                            <option value="">Select Class</option>
+                            {% for class in classes %}
+                            <option value="{{ class.id }}">{{ class.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="editSectionForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#sectionsTable').DataTable();
+    });
+
+    function editSection(sectionId) {
+        fetch(`/admin/section/${sectionId}`)
+            .then(response => response.json())
+            .then(data => {
+                $('#edit_section_id').val(data.id);
+                $('#edit_name').val(data.name);
+                $('#edit_class_id').val(data.class_id);
+                $('#editSectionForm').attr('action', `/admin/section/${sectionId}/edit`);
+                $('#editSectionModal').modal('show');
+            });
+    }
+
+    function deleteSection(sectionId) {
+        if (confirm('Are you sure you want to delete this section? This will also remove student assignments to this section.')) {
+            fetch(`/admin/section/${sectionId}/delete`, {
+                method: 'POST',
+            }).then(() => {
+                location.reload();
+            });
+        }
+    }
+</script>
+{% endblock %}
+{% endblock %} 

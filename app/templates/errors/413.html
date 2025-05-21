@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}413 - Request Entity Too Large{% endblock %}
+
+{% block content %}
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="text-center">
+        <h1 class="display-1 fw-bold">413</h1>
+        <p class="fs-3">File Too Large</p>
+        <p class="lead">
+            The file you're trying to upload is too large. Maximum allowed size is 16MB.
+        </p>
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Go Home</a>
+    </div>
+</div>
+{% endblock %} 

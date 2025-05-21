@@ -1,0 +1,139 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Edit About Page{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Edit About Page</h1>
+        <a href="{{ url_for('public.about') }}" class="btn btn-secondary" target="_blank">
+            <i class="bi bi-eye me-2"></i>View Page
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" id="aboutForm">
+                <div class="mb-4">
+                    <label for="title" class="form-label">Page Title</label>
+                    <input type="text" class="form-control" id="title" name="title" 
+                           value="{{ about.title if about else 'About Our School' }}" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Main Content</label>
+                    <div id="editor-content" style="height: 300px">{{ about.content if about else '' }}</div>
+                    <input type="hidden" name="content" id="content">
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Our Mission</label>
+                        <div id="editor-mission" style="height: 200px">{{ about.mission if about else '' }}</div>
+                        <input type="hidden" name="mission" id="mission">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Our Vision</label>
+                        <div id="editor-vision" style="height: 200px">{{ about.vision if about else '' }}</div>
+                        <input type="hidden" name="vision" id="vision">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script>
+    // Initialize Quill editors
+    const contentEditor = new Quill('#editor-content', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    const missionEditor = new Quill('#editor-mission', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['clean']
+            ]
+        }
+    });
+
+    const visionEditor = new Quill('#editor-vision', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['clean']
+            ]
+        }
+    });
+
+    // Form submission
+    document.getElementById('aboutForm').onsubmit = function() {
+        document.getElementById('content').value = contentEditor.root.innerHTML;
+        document.getElementById('mission').value = missionEditor.root.innerHTML;
+        document.getElementById('vision').value = visionEditor.root.innerHTML;
+    };
+
+    // Reset form
+    function resetForm() {
+        if (confirm('Are you sure you want to reset the form? All unsaved changes will be lost.')) {
+            contentEditor.setContents([]);
+            missionEditor.setContents([]);
+            visionEditor.setContents([]);
+            document.getElementById('title').value = 'About Our School';
+        }
+    }
+
+    // Auto-save draft (every 30 seconds)
+    setInterval(function() {
+        const draft = {
+            title: document.getElementById('title').value,
+            content: contentEditor.root.innerHTML,
+            mission: missionEditor.root.innerHTML,
+            vision: visionEditor.root.innerHTML
+        };
+        localStorage.setItem('aboutPageDraft', JSON.stringify(draft));
+    }, 30000);
+
+    // Load draft if exists
+    window.onload = function() {
+        const draft = localStorage.getItem('aboutPageDraft');
+        if (draft && !{{ 'true' if about else 'false' }}) {
+            if (confirm('A draft was found. Would you like to restore it?')) {
+                const data = JSON.parse(draft);
+                document.getElementById('title').value = data.title;
+                contentEditor.root.innerHTML = data.content;
+                missionEditor.root.innerHTML = data.mission;
+                visionEditor.root.innerHTML = data.vision;
+            } else {
+                localStorage.removeItem('aboutPageDraft');
+            }
+        }
+    };
+</script>
+{% endblock %} 

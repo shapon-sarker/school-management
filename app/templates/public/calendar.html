@@ -1,0 +1,65 @@
+{% extends "public/layout.html" %}
+
+{% block title %}Academic Calendar{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">Academic Calendar</h1>
+            <p class="lead">
+                Academic Year {{ current_year }}-{{ next_year }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Calendar Events -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            {% for term in calendar_events %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h3 mb-4">{{ term.term }}</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Event</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in term.events %}
+                                <tr>
+                                    <td>{{ event.date }}</td>
+                                    <td>{{ event.event }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Additional Notes -->
+    <div class="row mt-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="h4 mb-3">Important Notes</h3>
+                    <ul class="list-unstyled">
+                        <li>✓ Dates are subject to change based on government announcements</li>
+                        <li>✓ Public holidays will be announced separately</li>
+                        <li>✓ Parents will be notified of any changes via email</li>
+                        <li>✓ Please check the notice board regularly for updates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

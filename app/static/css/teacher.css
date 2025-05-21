@@ -1,0 +1,268 @@
+/* Teacher Panel Styles */
+:root {
+    --sidebar-width: 250px;
+    --sidebar-collapsed-width: 80px;
+    --primary-color: #4e73df;
+    --secondary-color: #858796;
+    --success-color: #1cc88a;
+    --info-color: #36b9cc;
+    --warning-color: #f6c23e;
+    --danger-color: #e74a3b;
+    --dark-color: #5a5c69;
+    --transition: all 0.3s ease;
+}
+
+/* Wrapper */
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+/* Sidebar */
+#sidebar {
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    background: #4e73df;
+    color: #fff;
+    transition: var(--transition);
+}
+
+#sidebar.active {
+    min-width: var(--sidebar-collapsed-width);
+    max-width: var(--sidebar-collapsed-width);
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #4668c5;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #5475d6;
+}
+
+#sidebar ul li a {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    display: block;
+    color: #fff;
+    text-decoration: none;
+}
+
+#sidebar ul li a:hover {
+    background: #5475d6;
+}
+
+#sidebar ul li.active > a {
+    background: #5475d6;
+}
+
+#sidebar ul ul a {
+    padding-left: 30px !important;
+    background: #4668c5;
+    font-size: 0.9em;
+}
+
+#sidebar.active .sidebar-header h3,
+#sidebar.active .components li > a > span {
+    display: none;
+}
+
+#sidebar.active .sidebar-header {
+    padding: 20px 10px;
+}
+
+#sidebar.active ul li a {
+    padding: 15px 10px;
+    text-align: center;
+}
+
+#sidebar.active ul ul a {
+    padding: 10px !important;
+}
+
+#sidebar .sidebar-toggle {
+    text-align: right;
+}
+
+/* Content */
+#content {
+    width: 100%;
+    min-height: 100vh;
+    background: #f8f9fc;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 0.35rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card .card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid var(--primary-color) !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid var(--success-color) !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid var(--info-color) !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid var(--warning-color) !important;
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-success {
+    color: var(--success-color) !important;
+}
+
+.text-info {
+    color: var(--info-color) !important;
+}
+
+.text-warning {
+    color: var(--warning-color) !important;
+}
+
+/* Activity Feed */
+.activity-feed {
+    padding: 15px;
+}
+
+.activity-item {
+    padding: 15px;
+    border-left: 2px solid var(--primary-color);
+    margin-bottom: 15px;
+    background: #fff;
+    position: relative;
+}
+
+.activity-item:last-child {
+    margin-bottom: 0;
+}
+
+.activity-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.activity-header i {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.activity-time {
+    color: var(--secondary-color);
+    font-size: 0.85rem;
+}
+
+/* Notice Items */
+.notice-item {
+    padding: 15px;
+    background: #fff;
+    border-radius: 0.35rem;
+}
+
+.notice-item:hover {
+    background: #f8f9fc;
+}
+
+/* Tables */
+.table-responsive {
+    margin: 15px 0;
+}
+
+.table th {
+    background: #f8f9fc;
+    border-top: none;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Buttons */
+.btn-block {
+    width: 100%;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-info {
+    background-color: var(--info-color);
+    border-color: var(--info-color);
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #sidebar {
+        min-width: var(--sidebar-collapsed-width);
+        max-width: var(--sidebar-collapsed-width);
+    }
+    
+    #sidebar .sidebar-header h3,
+    #sidebar .components li > a > span {
+        display: none;
+    }
+    
+    #sidebar ul li a {
+        padding: 15px 10px;
+        text-align: center;
+    }
+    
+    #sidebar ul ul a {
+        padding: 10px !important;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+} 

@@ -1,0 +1,103 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Reports</h1>
+    </div>
+
+    <div class="row">
+        <!-- Fee Reports -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-cash me-2"></i>Fee Reports
+                    </h5>
+                    <p class="card-text">View and generate reports for fee collection, pending payments, and payment history.</p>
+                    <a href="{{ url_for('admin.fee_reports') }}" class="btn btn-primary">
+                        View Fee Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Reports -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-calendar-check me-2"></i>Attendance Reports
+                    </h5>
+                    <p class="card-text">Generate attendance reports by class, section, or date range. View attendance statistics.</p>
+                    <a href="{{ url_for('admin.attendance_report') }}" class="btn btn-primary">
+                        View Attendance Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Results Reports -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-file-earmark-text me-2"></i>Exam Results
+                    </h5>
+                    <p class="card-text">Generate and view exam result reports, class performance, and individual student reports.</p>
+                    <a href="{{ url_for('admin.generate_results_report') }}" class="btn btn-primary">
+                        View Results Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Reports -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-people me-2"></i>Student Reports
+                    </h5>
+                    <p class="card-text">View student statistics, enrollment trends, and demographic reports.</p>
+                    <button class="btn btn-primary" onclick="alert('Coming Soon!')">
+                        View Student Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Reports -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-person-video3 me-2"></i>Teacher Reports
+                    </h5>
+                    <p class="card-text">View teacher workload, subject allocation, and performance reports.</p>
+                    <button class="btn btn-primary" onclick="alert('Coming Soon!')">
+                        View Teacher Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Library Reports -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-book me-2"></i>Library Reports
+                    </h5>
+                    <p class="card-text">Generate reports for book inventory, issue/return statistics, and overdue books.</p>
+                    <button class="btn btn-primary" onclick="alert('Coming Soon!')">
+                        View Library Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

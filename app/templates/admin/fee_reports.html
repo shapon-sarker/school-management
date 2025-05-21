@@ -1,0 +1,207 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Fee Reports{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Fee Collection Reports</h1>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="fee_type" class="form-label">Fee Type</label>
+                    <select class="form-select" id="fee_type" name="fee_type">
+                        <option value="">All Types</option>
+                        {% for fee_type in fee_types %}
+                        <option value="{{ fee_type.id }}" {% if selected_fee_type == fee_type.id %}selected{% endif %}>
+                            {{ fee_type.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="class_id" class="form-label">Class</label>
+                    <select class="form-select" id="class_id" name="class_id">
+                        <option value="">All Classes</option>
+                        {% for class in classes %}
+                        <option value="{{ class.id }}" {% if selected_class == class.id %}selected{% endif %}>
+                            {{ class.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{{ url_for('admin.fee_reports') }}" class="btn btn-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-primary h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Collections</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "%.2f"|format(total_collected) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-currency-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% for method, amount in payment_methods.items() %}
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-success h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                {{ method }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "%.2f"|format(amount) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-credit-card fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Collections Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Collection Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="collectionsTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Fee Type</th>
+                            <th>Amount</th>
+                            <th>Payment Method</th>
+                            <th>Receipt No.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for collection in collections %}
+                        <tr>
+                            <td>{{ collection.payment_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ collection.student.name }}</td>
+                            <td>{{ collection.student.class.name }}</td>
+                            <td>{{ collection.fee_type.name }}</td>
+                            <td>${{ "%.2f"|format(collection.amount) }}</td>
+                            <td>{{ collection.payment_method }}</td>
+                            <td>{{ collection.receipt_number }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Daily Collections</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="dailyCollectionsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Payment Methods Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="paymentMethodsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Daily Collections Chart
+    const dailyData = {{ daily_collections|tojson }};
+    new Chart(document.getElementById('dailyCollectionsChart'), {
+        type: 'line',
+        data: {
+            labels: Object.keys(dailyData),
+            datasets: [{
+                label: 'Daily Collections',
+                data: Object.values(dailyData),
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Payment Methods Chart
+    const methodsData = {{ payment_methods|tojson }};
+    new Chart(document.getElementById('paymentMethodsChart'), {
+        type: 'pie',
+        data: {
+            labels: Object.keys(methodsData),
+            datasets: [{
+                data: Object.values(methodsData),
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 205, 86)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+    // Initialize DataTable
+    $(document).ready(function() {
+        $('#collectionsTable').DataTable({
+            order: [[0, 'desc']],
+            pageLength: 25
+        });
+    });
+</script>
+{% endblock %} 

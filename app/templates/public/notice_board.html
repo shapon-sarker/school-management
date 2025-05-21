@@ -1,0 +1,136 @@
+{% extends "public/layout.html" %}
+
+{% block title %}Notice Board{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">Notice Board</h1>
+            <p class="lead">
+                Stay updated with the latest announcements, events, and important information.
+            </p>
+        </div>
+    </div>
+
+    <!-- Notice Categories -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+                <button class="btn btn-outline-primary active">All</button>
+                <button class="btn btn-outline-primary">Academic</button>
+                <button class="btn btn-outline-primary">Events</button>
+                <button class="btn btn-outline-primary">Sports</button>
+                <button class="btn btn-outline-primary">Activities</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notices -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            {% for notice in notices %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h4 mb-0">{{ notice.title }}</h2>
+                        <span class="badge bg-primary">{{ notice.category }}</span>
+                    </div>
+                    <p class="text-muted small mb-2">
+                        <i class="bi bi-calendar-event me-2"></i>{{ notice.date }}
+                    </p>
+                    <p class="mb-0">{{ notice.content }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Archive Section -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 mb-4">Notice Archive</h2>
+                    <div class="accordion" id="noticeArchive">
+                        <!-- Previous Month -->
+                        <div class="accordion-item">
+                            <h3 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#april2024">
+                                    April 2024
+                                </button>
+                            </h3>
+                            <div id="april2024" class="accordion-collapse collapse" data-bs-parent="#noticeArchive">
+                                <div class="accordion-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3">
+                                            <strong>Annual Day Celebration</strong><br>
+                                            <small class="text-muted">April 15, 2024</small>
+                                        </li>
+                                        <li class="mb-3">
+                                            <strong>Final Exam Schedule</strong><br>
+                                            <small class="text-muted">April 10, 2024</small>
+                                        </li>
+                                        <li>
+                                            <strong>Parent-Teacher Meeting</strong><br>
+                                            <small class="text-muted">April 5, 2024</small>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- March 2024 -->
+                        <div class="accordion-item">
+                            <h3 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#march2024">
+                                    March 2024
+                                </button>
+                            </h3>
+                            <div id="march2024" class="accordion-collapse collapse" data-bs-parent="#noticeArchive">
+                                <div class="accordion-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3">
+                                            <strong>Science Fair Results</strong><br>
+                                            <small class="text-muted">March 25, 2024</small>
+                                        </li>
+                                        <li class="mb-3">
+                                            <strong>Sports Day Schedule</strong><br>
+                                            <small class="text-muted">March 15, 2024</small>
+                                        </li>
+                                        <li>
+                                            <strong>Mid-Term Results</strong><br>
+                                            <small class="text-muted">March 5, 2024</small>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscribe to Updates -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="h4 mb-4">Stay Updated</h2>
+                    <p class="mb-4">Subscribe to receive notifications for new announcements</p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <input type="email" class="form-control" placeholder="Enter your email">
+                                <button class="btn btn-primary" type="button">Subscribe</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="small text-muted mt-2">We'll never share your email with anyone else.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

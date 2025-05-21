@@ -1,0 +1,243 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <div>
+            <select class="form-select" id="academicYear">
+                {% for year in academic_years %}
+                <option value="{{ year.id }}" {% if year.is_active %}selected{% endif %}>{{ year.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Students</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_students }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Teachers</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_teachers }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-person-video3 fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Fee Collection</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ stats.fee_collection }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-currency-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Attendance Today</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.attendance_percentage }}%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <!-- Student Distribution Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Student Distribution by Class</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="studentDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Collection Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Fee Collection Status</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="feeCollectionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities and Quick Actions -->
+    <div class="row">
+        <!-- Recent Activities -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+                </div>
+                <div class="card-body">
+                    <div class="activity-feed">
+                        {% for activity in recent_activities %}
+                        <div class="activity-item">
+                            <div class="activity-content">
+                                <div class="activity-header">
+                                    <i class="bi {{ activity.icon }}"></i>
+                                    <span class="activity-time">{{ activity.time }}</span>
+                                </div>
+                                <p class="mb-0">{{ activity.description }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('admin.add_student') }}" class="btn btn-primary btn-block">
+                                <i class="bi bi-person-plus"></i> Add Student
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('admin.add_teacher') }}" class="btn btn-success btn-block">
+                                <i class="bi bi-person-plus-fill"></i> Add Teacher
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('admin.attendance') }}" class="btn btn-info btn-block">
+                                <i class="bi bi-calendar2-check"></i> Attendance
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('admin.fee_collection') }}" class="btn btn-warning btn-block">
+                                <i class="bi bi-cash"></i> Collect Fee
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('admin.notices') }}" class="btn btn-danger btn-block">
+                                <i class="bi bi-megaphone"></i> Add Notice
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('admin.reports') }}" class="btn btn-secondary btn-block">
+                                <i class="bi bi-file-earmark-text"></i> Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Student Distribution Chart
+const studentCtx = document.getElementById('studentDistributionChart').getContext('2d');
+new Chart(studentCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ class_labels|tojson }},
+        datasets: [{
+            label: 'Number of Students',
+            data: {{ class_data|tojson }},
+            backgroundColor: 'rgba(78, 115, 223, 0.5)',
+            borderColor: 'rgba(78, 115, 223, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Fee Collection Chart
+const feeCtx = document.getElementById('feeCollectionChart').getContext('2d');
+new Chart(feeCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Collected', 'Pending', 'Overdue'],
+        datasets: [{
+            data: {{ fee_data|tojson }},
+            backgroundColor: [
+                'rgba(28, 200, 138, 0.5)',
+                'rgba(246, 194, 62, 0.5)',
+                'rgba(231, 74, 59, 0.5)'
+            ],
+            borderColor: [
+                'rgba(28, 200, 138, 1)',
+                'rgba(246, 194, 62, 1)',
+                'rgba(231, 74, 59, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        maintainAspectRatio: false
+    }
+});
+
+// Academic Year Change Handler
+document.getElementById('academicYear').addEventListener('change', function() {
+    window.location.href = "{{ url_for('admin.dashboard') }}?year=" + this.value;
+});
+</script>
+{% endblock %} 

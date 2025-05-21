@@ -1,0 +1,213 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Exam Results Management</h1>
+    
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>
+            Filter Results
+        </div>
+        <div class="card-body">
+            <form id="filterForm" class="row g-3">
+                <div class="col-md-3">
+                    <label for="exam_id" class="form-label">Exam</label>
+                    <select class="form-select" id="exam_id" name="exam_id" required>
+                        <option value="">Select Exam</option>
+                        {% for exam in exams %}
+                        <option value="{{ exam.id }}">{{ exam.name }} ({{ exam.term }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="class_id" class="form-label">Class</label>
+                    <select class="form-select" id="class_id" name="class_id" required>
+                        <option value="">Select Class</option>
+                        {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="section_id" class="form-label">Section</label>
+                    <select class="form-select" id="section_id" name="section_id" required>
+                        <option value="">Select Section</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Load Students</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Form -->
+    <div class="card mb-4" id="resultsCard" style="display: none;">
+        <div class="card-header">
+            <i class="fas fa-chart-bar me-1"></i>
+            Enter Results
+        </div>
+        <div class="card-body">
+            <form id="resultsForm" method="POST" action="{{ url_for('admin.save_results') }}">
+                <input type="hidden" name="exam_id" id="result_exam_id">
+                <input type="hidden" name="class_id" id="result_class_id">
+                <input type="hidden" name="section_id" id="result_section_id">
+                <table id="studentsTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Subjects</th>
+                            <th>Total</th>
+                            <th>Grade</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                    </tbody>
+                </table>
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary">Save Results</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Report -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-file-pdf me-1"></i>
+            Generate Report
+        </div>
+        <div class="card-body">
+            <form id="reportForm" class="row g-3">
+                <div class="col-md-4">
+                    <label for="report_exam_id" class="form-label">Exam</label>
+                    <select class="form-select" id="report_exam_id" name="exam_id" required>
+                        <option value="">Select Exam</option>
+                        {% for exam in exams %}
+                        <option value="{{ exam.id }}">{{ exam.name }} ({{ exam.term }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="report_type" class="form-label">Report Type</label>
+                    <select class="form-select" id="report_type" name="report_type" required>
+                        <option value="">Select Type</option>
+                        <option value="class">Class-wise</option>
+                        <option value="student">Student-wise</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Handle section dropdown updates
+        $('#class_id').change(function() {
+            const classId = $(this).val();
+            
+            if (classId) {
+                fetch(`/admin/class/${classId}/sections`)
+                    .then(response => response.json())
+                    .then(sections => {
+                        const dropdown = $('#section_id');
+                        dropdown.empty().append('<option value="">Select Section</option>');
+                        sections.forEach(section => {
+                            dropdown.append(`<option value="${section.id}">${section.name}</option>`);
+                        });
+                    });
+            }
+        });
+
+        // Handle filter form submission
+        $('#filterForm').submit(function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch(`/admin/results/students?${new URLSearchParams(formData)}`)
+                .then(response => response.json())
+                .then(data => {
+                    $('#studentsTableBody').empty();
+                    data.students.forEach(student => {
+                        let subjectInputs = '';
+                        data.subjects.forEach(subject => {
+                            const marks = data.results[student.id]?.[subject.id] || '';
+                            subjectInputs += `
+                                <div class="mb-2">
+                                    <label class="form-label">${subject.name}</label>
+                                    <input type="number" class="form-control" 
+                                           name="marks_${student.id}_${subject.id}" 
+                                           value="${marks}"
+                                           min="0" max="100" required>
+                                </div>
+                            `;
+                        });
+                        
+                        $('#studentsTableBody').append(`
+                            <tr>
+                                <td>${student.roll_no}</td>
+                                <td>${student.name}</td>
+                                <td>${subjectInputs}</td>
+                                <td id="total_${student.id}">-</td>
+                                <td id="grade_${student.id}">-</td>
+                                <td>
+                                    <input type="text" class="form-control" 
+                                           name="remarks_${student.id}" 
+                                           value="${data.results[student.id]?.remarks || ''}">
+                                </td>
+                            </tr>
+                        `);
+                    });
+                    
+                    // Update hidden fields and show results card
+                    $('#result_exam_id').val(formData.get('exam_id'));
+                    $('#result_class_id').val(formData.get('class_id'));
+                    $('#result_section_id').val(formData.get('section_id'));
+                    $('#resultsCard').show();
+                    
+                    // Add event listeners for marks calculation
+                    $('input[name^="marks_"]').on('input', calculateTotalAndGrade);
+                });
+        });
+
+        // Handle report form submission
+        $('#reportForm').submit(function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            window.location.href = `/admin/results/report?${new URLSearchParams(formData)}`;
+        });
+    });
+
+    function calculateTotalAndGrade() {
+        const studentId = this.name.split('_')[1];
+        const inputs = $(`input[name^="marks_${studentId}"]`);
+        let total = 0;
+        
+        inputs.each(function() {
+            total += parseInt(this.value) || 0;
+        });
+        
+        const average = total / inputs.length;
+        let grade = 'F';
+        
+        if (average >= 90) grade = 'A+';
+        else if (average >= 80) grade = 'A';
+        else if (average >= 70) grade = 'B';
+        else if (average >= 60) grade = 'C';
+        else if (average >= 50) grade = 'D';
+        
+        $(`#total_${studentId}`).text(total);
+        $(`#grade_${studentId}`).text(grade);
+    }
+</script>
+{% endblock %}
+{% endblock %} 

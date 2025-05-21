@@ -1,0 +1,162 @@
+{% extends "public/layout.html" %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">Contact Us</h1>
+            <p class="lead">
+                Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Contact Information -->
+        <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-4">Get in Touch</h2>
+                    
+                    <div class="mb-4">
+                        <h3 class="h6 text-primary">Address</h3>
+                        <p class="mb-0">{{ contact.address|default('123 School Street<br>Education District<br>City, State 12345')|safe }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="h6 text-primary">Phone</h3>
+                        <p class="mb-0">
+                            Main Office: {{ contact.main_phone|default('(555) 123-4567') }}<br>
+                            Admissions: {{ contact.admissions_phone|default('(555) 123-4568') }}<br>
+                            {% if contact.fax %}Fax: {{ contact.fax }}<br>{% endif %}
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="h6 text-primary">Email</h3>
+                        <p class="mb-0">
+                            General: {{ contact.general_email|default('info@school.com') }}<br>
+                            Admissions: {{ contact.admissions_email|default('admissions@school.com') }}<br>
+                            Support: {{ contact.support_email|default('support@school.com') }}
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="h6 text-primary">Office Hours</h3>
+                        <p class="mb-0">{{ contact.office_hours|default('Monday - Friday: 8:00 AM - 4:00 PM<br>Saturday: 9:00 AM - 12:00 PM<br>Sunday: Closed')|safe }}</p>
+                    </div>
+
+                    <div>
+                        <h3 class="h6 text-primary">Social Media</h3>
+                        <div class="d-flex gap-3">
+                            {% if contact.facebook %}
+                            <a href="{{ contact.facebook }}" class="text-primary" target="_blank"><i class="bi bi-facebook fs-5"></i></a>
+                            {% endif %}
+                            {% if contact.twitter %}
+                            <a href="{{ contact.twitter }}" class="text-primary" target="_blank"><i class="bi bi-twitter fs-5"></i></a>
+                            {% endif %}
+                            {% if contact.instagram %}
+                            <a href="{{ contact.instagram }}" class="text-primary" target="_blank"><i class="bi bi-instagram fs-5"></i></a>
+                            {% endif %}
+                            {% if contact.linkedin %}
+                            <a href="{{ contact.linkedin }}" class="text-primary" target="_blank"><i class="bi bi-linkedin fs-5"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 mb-4">Send us a Message</h2>
+                    <form action="{{ url_for('public.contact') }}" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                    <label for="name">Your Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                                    <label for="email">Your Email</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+                                    <label for="subject">Subject</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="department" name="department" required>
+                                        <option value="" selected disabled>Select a department</option>
+                                        {% if contact.departments %}
+                                            {% for dept in contact.departments %}
+                                            <option value="{{ dept }}">{{ dept }}</option>
+                                            {% endfor %}
+                                        {% else %}
+                                            <option value="general">General Inquiry</option>
+                                            <option value="admissions">Admissions</option>
+                                            <option value="academics">Academics</option>
+                                            <option value="finance">Finance</option>
+                                            <option value="support">Technical Support</option>
+                                        {% endif %}
+                                    </select>
+                                    <label for="department">Department</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="message" name="message" placeholder="Your Message" style="height: 150px" required></textarea>
+                                    <label for="message">Your Message</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="privacy" required>
+                                    <label class="form-check-label small" for="privacy">
+                                        I agree to the privacy policy and consent to being contacted regarding my request.
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Send Message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="ratio ratio-21x9">
+                        <iframe 
+                            src="{{ contact.map_embed_url|default('https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1!2d-73.9!3d40.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM40zMCcwMC4wIk4gNzPCsDU0JzAwLjAiVw!5e0!3m2!1sen!2sus!4v1234567890') }}"
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

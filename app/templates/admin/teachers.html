@@ -1,0 +1,170 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Teacher Management</h1>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-table me-1"></i>
+                Teachers List
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTeacherModal">
+                Add New Teacher
+            </button>
+        </div>
+        <div class="card-body">
+            <table id="teachersTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Subjects</th>
+                        <th>Join Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.id }}</td>
+                        <td>{{ teacher.name }}</td>
+                        <td>{{ teacher.email }}</td>
+                        <td>{{ teacher.phone }}</td>
+                        <td>{{ teacher.subjects|join(', ') }}</td>
+                        <td>{{ teacher.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editTeacher({{ teacher.id }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteTeacher({{ teacher.id }})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div class="modal fade" id="addTeacherModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Teacher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTeacherForm" method="POST" action="{{ url_for('admin.add_teacher') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label for="subjects" class="form-label">Subjects</label>
+                        <select class="form-select" id="subjects" name="subjects" multiple>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="addTeacherForm" class="btn btn-primary">Add Teacher</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Teacher Modal -->
+<div class="modal fade" id="editTeacherModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Teacher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTeacherForm" method="POST">
+                    <input type="hidden" id="edit_teacher_id" name="teacher_id">
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="edit_email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="edit_phone" name="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_subjects" class="form-label">Subjects</label>
+                        <select class="form-select" id="edit_subjects" name="subjects" multiple>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="editTeacherForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#teachersTable').DataTable();
+    });
+
+    function editTeacher(teacherId) {
+        fetch(`/admin/teacher/${teacherId}`)
+            .then(response => response.json())
+            .then(data => {
+                $('#edit_teacher_id').val(data.id);
+                $('#edit_name').val(data.name);
+                $('#edit_email').val(data.email);
+                $('#edit_phone').val(data.phone);
+                $('#edit_subjects').val(data.subjects);
+                $('#editTeacherForm').attr('action', `/admin/teacher/${teacherId}/edit`);
+                $('#editTeacherModal').modal('show');
+            });
+    }
+
+    function deleteTeacher(teacherId) {
+        if (confirm('Are you sure you want to delete this teacher?')) {
+            fetch(`/admin/teacher/${teacherId}/delete`, {
+                method: 'POST',
+            }).then(() => {
+                location.reload();
+            });
+        }
+    }
+</script>
+{% endblock %}
+{% endblock %} 
