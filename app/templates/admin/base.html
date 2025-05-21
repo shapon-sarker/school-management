@@ -30,131 +30,192 @@
             </div>
 
             <ul class="list-unstyled components">
+                <!-- Main Navigation -->
                 <li {% if request.endpoint == 'admin.dashboard' %}class="active"{% endif %}>
-                    <a href="{{ url_for('admin.dashboard') }}">
-                        <i class="bi bi-speedometer2"></i> Dashboard
+                    <a href="{{ url_for('admin.dashboard') }}" title="Dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
                     </a>
                 </li>
                 
-                <li>
-                    <a href="#userSubmenu" data-bs-toggle="collapse" aria-expanded="false">
-                        <i class="bi bi-people"></i> User Management
+                <!-- User Management Section -->
+                <li {% if 'admin.teachers' in request.endpoint or 'admin.students' in request.endpoint %}class="active"{% endif %}>
+                    <a href="#userSubmenu" data-bs-toggle="collapse" aria-expanded="{{ 'true' if 'admin.teachers' in request.endpoint or 'admin.students' in request.endpoint else 'false' }}" title="User Management">
+                        <i class="bi bi-people"></i>
+                        <span>User Management</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul class="collapse list-unstyled" id="userSubmenu">
-                        <li>
-                            <a href="{{ url_for('admin.teachers') }}">Teachers</a>
+                    <ul class="collapse {{ 'show' if 'admin.teachers' in request.endpoint or 'admin.students' in request.endpoint else '' }}" id="userSubmenu">
+                        <li {% if 'admin.teachers' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.teachers') }}" title="Teachers">
+                                <span>Teachers</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.students') }}">Students</a>
+                        <li {% if 'admin.students' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.students') }}" title="Students">
+                                <span>Students</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <a href="#academicSubmenu" data-bs-toggle="collapse" aria-expanded="false">
-                        <i class="bi bi-book"></i> Academics
+                <!-- Academic Section -->
+                <li {% if 'admin.classes' in request.endpoint or 'admin.sections' in request.endpoint or 'admin.subjects' in request.endpoint %}class="active"{% endif %}>
+                    <a href="#academicSubmenu" data-bs-toggle="collapse" aria-expanded="{{ 'true' if 'admin.classes' in request.endpoint or 'admin.sections' in request.endpoint or 'admin.subjects' in request.endpoint else 'false' }}" title="Academics">
+                        <i class="bi bi-book"></i>
+                        <span>Academics</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul class="collapse list-unstyled" id="academicSubmenu">
-                        <li>
-                            <a href="{{ url_for('admin.classes') }}">Classes</a>
+                    <ul class="collapse {{ 'show' if 'admin.classes' in request.endpoint or 'admin.sections' in request.endpoint or 'admin.subjects' in request.endpoint else '' }}" id="academicSubmenu">
+                        <li {% if 'admin.classes' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.classes') }}" title="Classes">
+                                <span>Classes</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.sections') }}">Sections</a>
+                        <li {% if 'admin.sections' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.sections') }}" title="Sections">
+                                <span>Sections</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.subjects') }}">Subjects</a>
+                        <li {% if 'admin.subjects' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.subjects') }}" title="Subjects">
+                                <span>Subjects</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <a href="{{ url_for('admin.attendance') }}">
-                        <i class="bi bi-calendar-check"></i> Attendance
+                <!-- Attendance -->
+                <li {% if request.endpoint == 'admin.attendance' %}class="active"{% endif %}>
+                    <a href="{{ url_for('admin.attendance') }}" title="Attendance">
+                        <i class="bi bi-calendar-check"></i>
+                        <span>Attendance</span>
                     </a>
                 </li>
 
-                <li>
-                    <a href="#examSubmenu" data-bs-toggle="collapse" aria-expanded="false">
-                        <i class="bi bi-file-text"></i> Examination
+                <!-- Examination Section -->
+                <li {% if 'admin.exams' in request.endpoint or 'admin.results' in request.endpoint %}class="active"{% endif %}>
+                    <a href="#examSubmenu" data-bs-toggle="collapse" aria-expanded="{{ 'true' if 'admin.exams' in request.endpoint or 'admin.results' in request.endpoint else 'false' }}" title="Examination">
+                        <i class="bi bi-file-text"></i>
+                        <span>Examination</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul class="collapse list-unstyled" id="examSubmenu">
-                        <li>
-                            <a href="{{ url_for('admin.exams') }}">Exams</a>
+                    <ul class="collapse {{ 'show' if 'admin.exams' in request.endpoint or 'admin.results' in request.endpoint else '' }}" id="examSubmenu">
+                        <li {% if 'admin.exams' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.exams') }}" title="Exams">
+                                <span>Exams</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.results') }}">Results</a>
+                        <li {% if 'admin.results' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.results') }}" title="Results">
+                                <span>Results</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <a href="#feeSubmenu" data-bs-toggle="collapse" aria-expanded="false">
-                        <i class="bi bi-cash-stack"></i> Fee Management
+                <!-- Fee Management Section -->
+                <li {% if 'admin.fee_types' in request.endpoint or 'admin.fee_collection' in request.endpoint or 'admin.fee_reports' in request.endpoint %}class="active"{% endif %}>
+                    <a href="#feeSubmenu" data-bs-toggle="collapse" aria-expanded="{{ 'true' if 'admin.fee_types' in request.endpoint or 'admin.fee_collection' in request.endpoint or 'admin.fee_reports' in request.endpoint else 'false' }}" title="Fee Management">
+                        <i class="bi bi-cash-stack"></i>
+                        <span>Fee Management</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul class="collapse list-unstyled" id="feeSubmenu">
-                        <li>
-                            <a href="{{ url_for('admin.fee_types') }}">Fee Types</a>
+                    <ul class="collapse {{ 'show' if 'admin.fee_types' in request.endpoint or 'admin.fee_collection' in request.endpoint or 'admin.fee_reports' in request.endpoint else '' }}" id="feeSubmenu">
+                        <li {% if 'admin.fee_types' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.fee_types') }}" title="Fee Types">
+                                <span>Fee Types</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.fee_collection') }}">Collection</a>
+                        <li {% if 'admin.fee_collection' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.fee_collection') }}" title="Collection">
+                                <span>Collection</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.fee_reports') }}">Reports</a>
+                        <li {% if 'admin.fee_reports' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.fee_reports') }}" title="Reports">
+                                <span>Reports</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <a href="#librarySubmenu" data-bs-toggle="collapse" aria-expanded="false">
-                        <i class="bi bi-book"></i> Library
+                <!-- Library Section -->
+                <li {% if 'admin.books' in request.endpoint or 'admin.issue_return' in request.endpoint %}class="active"{% endif %}>
+                    <a href="#librarySubmenu" data-bs-toggle="collapse" aria-expanded="{{ 'true' if 'admin.books' in request.endpoint or 'admin.issue_return' in request.endpoint else 'false' }}" title="Library">
+                        <i class="bi bi-book"></i>
+                        <span>Library</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul class="collapse list-unstyled" id="librarySubmenu">
-                        <li>
-                            <a href="{{ url_for('admin.books') }}">Books</a>
+                    <ul class="collapse {{ 'show' if 'admin.books' in request.endpoint or 'admin.issue_return' in request.endpoint else '' }}" id="librarySubmenu">
+                        <li {% if 'admin.books' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.books') }}" title="Books">
+                                <span>Books</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.issue_return') }}">Issue/Return</a>
+                        <li {% if 'admin.issue_return' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.issue_return') }}" title="Issue/Return">
+                                <span>Issue/Return</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <a href="#transportSubmenu" data-bs-toggle="collapse" aria-expanded="false">
-                        <i class="bi bi-truck"></i> Transport
+                <!-- Transport Section -->
+                <li {% if 'admin.vehicles' in request.endpoint or 'admin.routes' in request.endpoint %}class="active"{% endif %}>
+                    <a href="#transportSubmenu" data-bs-toggle="collapse" aria-expanded="{{ 'true' if 'admin.vehicles' in request.endpoint or 'admin.routes' in request.endpoint else 'false' }}" title="Transport">
+                        <i class="bi bi-truck"></i>
+                        <span>Transport</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul class="collapse list-unstyled" id="transportSubmenu">
-                        <li>
-                            <a href="{{ url_for('admin.vehicles') }}">Vehicles</a>
+                    <ul class="collapse {{ 'show' if 'admin.vehicles' in request.endpoint or 'admin.routes' in request.endpoint else '' }}" id="transportSubmenu">
+                        <li {% if 'admin.vehicles' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.vehicles') }}" title="Vehicles">
+                                <span>Vehicles</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.routes') }}">Routes</a>
+                        <li {% if 'admin.routes' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.routes') }}" title="Routes">
+                                <span>Routes</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <a href="{{ url_for('admin.notices') }}">
-                        <i class="bi bi-megaphone"></i> Notice Board
+                <!-- Notice Board -->
+                <li {% if request.endpoint == 'admin.notices' %}class="active"{% endif %}>
+                    <a href="{{ url_for('admin.notices') }}" title="Notice Board">
+                        <i class="bi bi-megaphone"></i>
+                        <span>Notice Board</span>
                     </a>
                 </li>
 
-                <li>
-                    <a href="#websiteSubmenu" data-bs-toggle="collapse" aria-expanded="false">
-                        <i class="bi bi-globe"></i> Website
+                <!-- Website Section -->
+                <li {% if 'admin.edit_about' in request.endpoint or 'admin.edit_contact' in request.endpoint %}class="active"{% endif %}>
+                    <a href="#websiteSubmenu" data-bs-toggle="collapse" aria-expanded="{{ 'true' if 'admin.edit_about' in request.endpoint or 'admin.edit_contact' in request.endpoint else 'false' }}" title="Website">
+                        <i class="bi bi-globe"></i>
+                        <span>Website</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul class="collapse list-unstyled" id="websiteSubmenu">
-                        <li>
-                            <a href="{{ url_for('admin.edit_about') }}">About Page</a>
+                    <ul class="collapse {{ 'show' if 'admin.edit_about' in request.endpoint or 'admin.edit_contact' in request.endpoint else '' }}" id="websiteSubmenu">
+                        <li {% if 'admin.edit_about' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.edit_about') }}" title="About Page">
+                                <span>About Page</span>
+                            </a>
                         </li>
-                        <li>
-                            <a href="{{ url_for('admin.edit_contact') }}">Contact Page</a>
+                        <li {% if 'admin.edit_contact' in request.endpoint %}class="active"{% endif %}>
+                            <a href="{{ url_for('admin.edit_contact') }}" title="Contact Page">
+                                <span>Contact Page</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <a href="{{ url_for('admin.settings') }}">
-                        <i class="bi bi-gear"></i> Settings
+                <!-- Settings -->
+                <li {% if request.endpoint == 'admin.settings' %}class="active"{% endif %}>
+                    <a href="{{ url_for('admin.settings') }}" title="Settings">
+                        <i class="bi bi-gear"></i>
+                        <span>Settings</span>
                     </a>
                 </li>
             </ul>
