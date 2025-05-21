@@ -19,7 +19,7 @@
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar" class="active">
+        <nav id="sidebar">
             <div class="sidebar-header">
                 <h3>School MS</h3>
                 <div class="sidebar-toggle">
@@ -233,7 +233,15 @@
             // Sidebar Toggle
             document.getElementById('sidebarCollapse').addEventListener('click', function() {
                 document.getElementById('sidebar').classList.toggle('active');
+                // Store sidebar state in localStorage
+                localStorage.setItem('sidebarState', document.getElementById('sidebar').classList.contains('active'));
             });
+
+            // Restore sidebar state on page load
+            const sidebarState = localStorage.getItem('sidebarState');
+            if (sidebarState === 'true') {
+                document.getElementById('sidebar').classList.add('active');
+            }
 
             // Close alerts automatically
             var alerts = document.querySelectorAll('.alert');

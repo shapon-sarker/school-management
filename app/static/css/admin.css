@@ -1,7 +1,7 @@
 /* Admin Panel Styles */
 :root {
     --sidebar-width: 250px;
-    --sidebar-collapsed-width: 80px;
+    --sidebar-collapsed-width: 100px;
     --primary-color: #4e73df;
     --secondary-color: #858796;
     --success-color: #1cc88a;
@@ -26,6 +26,10 @@
     background: #4e73df;
     color: #fff;
     transition: var(--transition);
+    height: 100vh;
+    position: fixed;
+    overflow-y: auto;
+    z-index: 1000;
 }
 
 #sidebar.active {
@@ -36,6 +40,17 @@
 #sidebar .sidebar-header {
     padding: 20px;
     background: #4668c5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#sidebar .sidebar-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: var(--transition);
 }
 
 #sidebar ul.components {
@@ -43,12 +58,28 @@
     border-bottom: 1px solid #5475d6;
 }
 
+#sidebar ul li {
+    position: relative;
+}
+
 #sidebar ul li a {
     padding: 10px 20px;
-    font-size: 1.1em;
-    display: block;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
     color: #fff;
     text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+#sidebar ul li a i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+    min-width: 25px;
+    text-align: center;
+    transition: var(--transition);
 }
 
 #sidebar ul li a:hover {
@@ -59,39 +90,91 @@
     background: #5475d6;
 }
 
-#sidebar ul ul a {
-    padding-left: 30px !important;
+#sidebar ul ul {
     background: #4668c5;
-    font-size: 0.9em;
+    transition: var(--transition);
 }
 
-#sidebar.active .sidebar-header h3,
-#sidebar.active .components li > a > span {
-    display: none;
+#sidebar ul ul a {
+    padding-left: 50px !important;
+    font-size: 0.9rem;
 }
 
-#sidebar.active .sidebar-header {
-    padding: 20px 10px;
+/* Collapsed Sidebar Styles */
+#sidebar.active .sidebar-header h3 {
+    font-size: 0.8rem;
+    text-align: center;
+    white-space: normal;
+    word-wrap: break-word;
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 #sidebar.active ul li a {
-    padding: 15px 10px;
+    padding: 12px 8px;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    gap: 5px;
+}
+
+#sidebar.active ul li a i {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+#sidebar.active ul li a span {
+    display: block;
+    font-size: 0.7rem;
+    opacity: 1;
+    width: 100%;
+    text-align: center;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.2;
+}
+
+#sidebar.active ul ul {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    min-width: 200px;
+    display: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 3px 0 8px rgba(0,0,0,0.1);
 }
 
 #sidebar.active ul ul a {
-    padding: 10px !important;
+    padding: 12px 20px !important;
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
 }
 
-#sidebar .sidebar-toggle {
-    text-align: right;
+#sidebar.active ul ul a span {
+    font-size: 0.9rem;
+    text-align: left;
+    white-space: nowrap;
 }
 
-/* Content */
+#sidebar.active ul li:hover > ul {
+    display: block;
+}
+
+/* Content Area */
 #content {
     width: 100%;
     min-height: 100vh;
     background: #f8f9fc;
+    margin-left: var(--sidebar-width);
+    transition: var(--transition);
+}
+
+#sidebar.active + #content {
+    margin-left: var(--sidebar-collapsed-width);
 }
 
 /* Cards */
@@ -187,22 +270,23 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     #sidebar {
-        min-width: var(--sidebar-collapsed-width);
-        max-width: var(--sidebar-collapsed-width);
+        margin-left: calc(-1 * var(--sidebar-width));
     }
     
-    #sidebar .sidebar-header h3,
-    #sidebar .components li > a > span {
-        display: none;
+    #sidebar.active {
+        margin-left: 0;
     }
     
-    #sidebar ul li a {
-        padding: 15px 10px;
-        text-align: center;
+    #content {
+        margin-left: 0;
     }
     
-    #sidebar ul ul a {
-        padding: 10px !important;
+    #sidebar.active + #content {
+        margin-left: 0;
+    }
+    
+    .sidebar-toggle {
+        display: block;
     }
     
     .chart-area {
